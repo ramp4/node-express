@@ -7,6 +7,27 @@ const p = path.join(
 );
 
 class Card {
+  static async remove(id) {
+    const card = await Card.fetch();
+    const idx = card.courses.findIndex(item => item.id === id);
+    const course = card.courses[idx];
+
+    if (course.count === 1) {
+      // card.courses.filter(item => item.id !== id);
+      card.courses.splice(idx, 1);
+    } else {
+      card.courses[idx].count--;
+    }
+    card.price -= course.price;
+
+    return new Promise((resolve, reject) => {
+      fs.writeFile(p, JSON.stringify(card), err => {
+        if (err) reject(err);
+        resolve(card);
+      });
+    });
+  }
+
   static async add(course) {
     const card = await Card.fetch();
 
